@@ -4,6 +4,8 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
+var expressLayout = require("express-ejs-layouts");
+
 const database = require("./config/database");
 
 var indexRouter = require("./routes/index");
@@ -13,7 +15,7 @@ var moviesRouter = require("./routes/movies");
 var app = express();
 
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
+app.use(expressLayout)
 app.set("view engine", "ejs");
 
 //Connection mongoDB
