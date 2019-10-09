@@ -15,8 +15,11 @@ var moviesRouter = require("./routes/movies");
 var app = express();
 
 // view engine setup
-app.use(expressLayout)
+app.use(expressLayout);
 app.set("view engine", "ejs");
+
+//Express body parser
+app.use(express.urlencoded({ extended: true }));
 
 //Connection mongoDB
 database.connection.on(
