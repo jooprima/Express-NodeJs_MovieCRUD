@@ -2,20 +2,24 @@ var express = require("express");
 var router = express.Router();
 var bcrypt = require("bcrypt");
 
+const passport = require("passport");
+
+const { forwardAuth } = require("../config/auth");
+
 var User = require("../models/UserSchema");
 
 // Halaman Login
-router.get("/login", function(req, res, next) {
+router.get("/login", forwardAuth, function(req, res, next) {
   res.render("login", { title: "Halaman Login" });
 });
 
 //Halaman Register
-router.get("/register", function(req, res, next) {
+router.get("/register", forwardAuth, function(req, res, next) {
   res.render("register", { title: "Halaman Register" });
 });
 
 //Action Login
-router.post("/login", function(req, res) {
+router.post("/login", forwardAuth, function(req, res, next) {
   const { email, password } = req.body;
 
   let errors = [];
@@ -31,28 +35,16 @@ router.post("/login", function(req, res) {
       password
     });
   } else {
-    User.findOne({ email: email }).then(user => {
-      if (user) {
-        if (bcrypt.compareSync(password, user.password)) {
-          res.redirect("/dashboard");
-        } else {
-          errors.push({ msg: "Password anda tidak sama,Silahkan ulangi" });
-          res.render("login", {
-            errors
-          });
-        }
-      } else {
-        errors.push({ msg: "Email anda belum terdaftar" });
-        res.render("login", {
-          errors
-        });
-      }
-    });
+    passport.authenticate("local", {
+      successRedirect: "/dashboard",
+      failureRedirect: "/auth/login",
+      failureFlash: true
+    })(req, res, next);
   }
 });
 
 //Action register
-router.post("/register", function(req, res) {
+router.post("/register", forwardAuth, function(req, res) {
   const { name, email, password, password2 } = req.body;
 
   let errors = [];
@@ -107,6 +99,7 @@ router.post("/register", function(req, res) {
 
 //Logout
 router.get("/logout", function(req, res) {
+  req.logout();
   res.redirect("/");
 });
 

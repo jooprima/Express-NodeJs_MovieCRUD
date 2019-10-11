@@ -6,8 +6,10 @@ var moment = require("moment");
 
 var Movie = require("../models/MovieSchema");
 
+const { CekAuth } = require("../config/auth");
+
 //Get all movies
-router.get("/", function(req, res, next) {
+router.get("/", CekAuth, function(req, res, next) {
   let ListMovies = [];
   Movie.find(function(err, movies) {
     if (movies) {
@@ -31,12 +33,12 @@ router.get("/", function(req, res, next) {
 });
 
 //create Movies
-router.get("/create", function(req, res, next) {
+router.get("/create", CekAuth, function(req, res, next) {
   res.render("movie/createMovies", { title: "Halaman Create Movie" });
 });
 
 //update movies
-router.get("/update/:movieId", function(req, res, nest) {
+router.get("/update/:movieId", CekAuth, function(req, res, nest) {
   Movie.findById(req.params.movieId, function(err, movieInfo) {
     var newDate = moment(movieInfo.released_on).format("YYYY-MM-DD");
 
@@ -51,7 +53,7 @@ router.get("/update/:movieId", function(req, res, nest) {
 });
 
 //action create
-router.post("/create", function(req, res) {
+router.post("/create", CekAuth, function(req, res) {
   const { name, date } = req.body;
 
   let errors = [];
@@ -78,7 +80,7 @@ router.post("/create", function(req, res) {
 });
 
 //action update
-router.post("/update", function(req, res) {
+router.post("/update", CekAuth, function(req, res) {
   let errors = [];
 
   Movie.findByIdAndUpdate(
@@ -105,7 +107,7 @@ router.post("/update", function(req, res) {
 });
 
 //action delete
-router.get("/delete/:movieId", function(req, res) {
+router.get("/delete/:movieId", CekAuth, function(req, res) {
   Movie.findByIdAndDelete(req.params.movieId, function() {
     res.redirect("/movies");
   });
